@@ -22,9 +22,18 @@ void SVM::Load(const string& FileName) {
         string s;
         while (getline(input, s)) {
             vector<string> v = StrSplitByWhitespace(s);
-            if (v.size())
+            if (v.size() && v[0] != "#")
                 Syntax.push_back(v);
         }
+
+        #ifdef DEBUG
+            for (int i = 0; i < Syntax.size(); ++i) {
+                for (int j = 0; j < Syntax[i].size(); ++j) {
+                    cout << Syntax[i][j] << " ";
+                }
+                cout << endl;
+            }
+        #endif
     }
 }
 
@@ -226,7 +235,7 @@ void SVM::CmdJumpRegister(int rDest) {
 }
 
 void SVM::CmdJumpAndLink(int rDest, const string& label) {
-    Register[rDest] = ProgramCounter+1;
+    Register[rDest] = ProgramCounter;
     ProgramCounter = Label[label];
 }
 

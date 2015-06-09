@@ -33,7 +33,7 @@ halt
 		jal $14 .sum 		# recursive call
 		addi $15 $15 2 		# pop parameter from stack
 
-		addi $15 $15 4
+		addi $15 $15 2
 		ld $8 $15 -1 		# restore local variable
 		add $13 $13 $8
 	.sum.1
