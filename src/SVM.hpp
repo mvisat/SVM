@@ -3,6 +3,7 @@
 
 #include "StrUtil.hpp"
 #include "LibCall.hpp"
+#include "SVMException.hpp"
 
 #include <iostream>
 #include <fstream>

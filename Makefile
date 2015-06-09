@@ -1,6 +1,8 @@
-FILES = src\Main.cpp src\SVM.cpp src\StrUtil.cpp src\LibCall.cpp
-OUT = bin\SVM
+FLAGS = -ldl
+FILES = src/Main.cpp src/SVM.cpp src/StrUtil.cpp src/LibCall.cpp
+OUT = bin/SVM
+COMPILE = g++ $(FILES) -o $(OUT) $(FLAGS)
 all:
-	g++ $(FILES) -o $(OUT)
+	$(COMPILE) -O2
 debug:
-	g++ $(FILES) -o $(OUT) -D DEBUG
+	$(COMPILE) -D DEBUG

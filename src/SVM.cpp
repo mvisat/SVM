@@ -23,7 +23,14 @@ void SVM::Load(const string& FileName) {
         string s;
         while (getline(input, s)) {
             vector<string> v = StrSplitByWhitespace(s);
-            if (v.size() && v[0] != "#")
+            for (int i = 0; i < v.size(); ++i) {
+                if (v[i] == "#") {
+                    while (i < v.size())
+                        v.erase(v.begin()+i);
+                    break;
+                }
+            }
+            if (v.size())
                 Syntax.push_back(v);
         }
 
@@ -36,11 +43,15 @@ void SVM::Load(const string& FileName) {
             }
         #endif
     }
+    else {
+        throw SVMException("Error: Failed to read file '" + FileName + "'");
+    }
 }
 
 void SVM::Initialize() {
     Halt = false;
     ProgramCounter = 0;
+    LastHandle = NULL;
 
     Register.clear();
     for (int i = 0; i < MaxRegister; ++i)
@@ -52,7 +63,7 @@ void SVM::Initialize() {
 
     Label.clear();
     for (int i = 0; i < Syntax.size(); ++i) {
-        if (Syntax[i][0].substr(0, 1) == ".") {
+        if (Syntax[i][0][0] == '.') {
             Label[Syntax[i][0]] = i;
         }
     }
@@ -70,7 +81,10 @@ void SVM::Run() {
                 cout << Syntax[ProgramCounter][i] << " ";
             cout << endl;
         #endif
+
         Process(Syntax[ProgramCounter]);
+        ++ProgramCounter;
+
         #ifdef DEBUG
             for (int i = 0; i < MaxRegister; ++i)
                 cout << "$" << i << " = " << Register[i] << endl;
@@ -82,7 +96,7 @@ void SVM::Run() {
 }
 
 void SVM::Process(const vector<string>& cmd) {
-    if (cmd[0] == "start" || cmd[0] == "#") {
+    if (cmd.size() == 0 || cmd[0] == "start" || cmd[0] == "#" || cmd[0][0] == '.') {
         // Do nothing
     }
     else if (cmd[0] == "halt") {
@@ -157,7 +171,9 @@ void SVM::Process(const vector<string>& cmd) {
     else if (cmd[0] == "link") {
         CmdLibraryLink(cmd[1]);
     }
-    ++ProgramCounter;
+    else {
+        throw SVMException("Error: Invalid syntax '" + cmd[0] + "'");
+    }
 }
 
 int SVM::ParseRegister(const string& s) {
@@ -250,7 +266,7 @@ void SVM::CmdJumpAndLink(int rDest, const string& label) {
 
 void SVM::CmdLibraryCall(int rDest, int rSrc, const string& func) {
     if (func == "@input") {
-        short in;
+        int in;
         cin >> in;
         Register[rDest] = in;
     }
@@ -265,13 +281,21 @@ void SVM::CmdLibraryCall(int rDest, int rSrc, const string& func) {
 
 void SVM::CmdLibraryOpen(const string& lib) {
     if (LibHandle.find(lib) == LibHandle.end()) {
-        lib_t handle;
-        if (handle = LibLoad(lib.c_str())) {
+        lib_t handle = NULL;
+        #ifdef _WIN32
+            handle = LibLoad(lib.c_str());
+        #else
+            if (lib.size() && (lib[0] == '.' || lib[0] == '/'))
+                handle = LibLoad(lib.c_str());
+            else
+                handle = LibLoad(("./" + lib).c_str());
+        #endif
+        if (handle) {
             LibHandle[lib] = handle;
             LastHandle = handle;
         }
         else {
-            cout << "Gagal Load" << endl;
+            throw SVMException("Error: Failed to load library '" + lib + "'");
         }
     }
 
@@ -280,11 +304,9 @@ void SVM::CmdLibraryOpen(const string& lib) {
 void SVM::CmdLibraryLink(const string& func) {
     if (LastHandle) {
         FuncPrototype f = NULL;
-        if (f = (FuncPrototype)::LoadProc(LastHandle, func.substr(1).c_str())) {
+        if (f = (FuncPrototype)::LoadProc(LastHandle, func.substr(1).c_str()))
             LibFunction[func] = f;
-        }
-        else {
-            cout << "Gagal link" << endl;
-        }
+        else
+            throw SVMException("Error: Failed to link function '" + func + "'");
     }
 }
