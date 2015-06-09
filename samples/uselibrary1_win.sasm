@@ -1,0 +1,28 @@
+# library use sample #1
+lopen libhello.dll
+link @hello
+lopen libsample.dll
+link @acak
+link @println
+
+start
+libc $0 $0 @hello			# hello world!
+libc $1 $0 @acak			# generate random integer
+libc $1 $1 @output			# output result
+
+# preparing print
+ldi $15 0
+ldi $2 65
+str $2 $15 0
+ldi $2 76
+str $2 $15 1
+ldi $2 79
+str $2 $15 2
+ldi $2 72
+str $2 $15 3
+ldi $2 65
+str $2 $15 4
+ldi $2 0
+str $2 $15 5
+libc $15 $15 @println		# print ALOHA
+halt

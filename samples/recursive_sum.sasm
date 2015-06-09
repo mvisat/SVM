@@ -21,7 +21,7 @@ halt
 
 	ld $8 $15 3
 
-
+	
 	ldi $13 0
 	jz $8 .sum.1 			# base: if 0 return 0
 		str $8 $15 -1 		# store local variable
@@ -33,7 +33,7 @@ halt
 		jal $14 .sum 		# recursive call
 		addi $15 $15 2 		# pop parameter from stack
 
-		addi $15 $15 2
+		addi $15 $15 2 
 		ld $8 $15 -1 		# restore local variable
 		add $13 $13 $8
 	.sum.1

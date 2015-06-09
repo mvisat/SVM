@@ -2,6 +2,7 @@
 #define SVM_H
 
 #include "StrUtil.hpp"
+#include "LibCall.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -10,6 +11,8 @@
 #include <map>
 
 using namespace std;
+
+typedef void (*FuncPrototype)(int* target, int src, char* memory);
 
 class SVM
 {
@@ -29,6 +32,9 @@ private:
     map<string, int> Label;
     static const int MaxRegister;
     static const int MaxMemory;
+    map<string, lib_t> LibHandle;
+    lib_t LastHandle;
+    map<string, FuncPrototype> LibFunction;
 
     void Initialize();
 
@@ -56,7 +62,8 @@ private:
     void CmdJumpRegister(int rDest);
     void CmdJumpAndLink(int rDest, const string& label);
     void CmdLibraryCall(int rDest, int rSrc, const string& func);
-
+    void CmdLibraryOpen(const string& lib);
+    void CmdLibraryLink(const string& func);
 };
 
 #endif

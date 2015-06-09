@@ -12,7 +12,8 @@ SVM::SVM(const string& FileName) {
 }
 
 SVM::~SVM() {
-
+    for (map<string, lib_t>::iterator it = LibHandle.begin(); it != LibHandle.end(); ++it)
+        LibUnload(it->second);
 }
 
 void SVM::Load(const string& FileName) {
@@ -73,6 +74,8 @@ void SVM::Run() {
         #ifdef DEBUG
             for (int i = 0; i < MaxRegister; ++i)
                 cout << "$" << i << " = " << Register[i] << endl;
+            for (int i = 0; i < 10; ++i)
+                cout << (int)Memory[i] << " ";
             cout << endl;
         #endif
     }
@@ -147,6 +150,12 @@ void SVM::Process(const vector<string>& cmd) {
     }
     else if (cmd[0] == "libc") {
         CmdLibraryCall(ParseRegister(cmd[1]), ParseRegister(cmd[2]), cmd[3]);
+    }
+    else if (cmd[0] == "lopen") {
+        CmdLibraryOpen(cmd[1]);
+    }
+    else if (cmd[0] == "link") {
+        CmdLibraryLink(cmd[1]);
     }
     ++ProgramCounter;
 }
@@ -247,5 +256,35 @@ void SVM::CmdLibraryCall(int rDest, int rSrc, const string& func) {
     }
     else if (func == "@output") {
         cout << Register[rSrc] << endl;
+    }
+    else {
+        FuncPrototype f = LibFunction[func];
+        f(&Register[rDest], Register[rSrc], Memory.data());
+    }
+}
+
+void SVM::CmdLibraryOpen(const string& lib) {
+    if (LibHandle.find(lib) == LibHandle.end()) {
+        lib_t handle;
+        if (handle = LibLoad(lib.c_str())) {
+            LibHandle[lib] = handle;
+            LastHandle = handle;
+        }
+        else {
+            cout << "Gagal Load" << endl;
+        }
+    }
+
+}
+
+void SVM::CmdLibraryLink(const string& func) {
+    if (LastHandle) {
+        FuncPrototype f = NULL;
+        if (f = (FuncPrototype)::LoadProc(LastHandle, func.substr(1).c_str())) {
+            LibFunction[func] = f;
+        }
+        else {
+            cout << "Gagal link" << endl;
+        }
     }
 }

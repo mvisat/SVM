@@ -1,0 +1,24 @@
+# library use sample #2
+# sum program using library call
+# read integer n (n > 0), returns 1 + ... + n
+
+lopen libhello.dll
+link @sum
+
+start
+	libc $0 $0 @input		# read n
+	ldi $1 0
+	ldi $15 0
+	stb $0 $15 0			# store array length at memory[0] as 8-bit
+
+	.L1 					# while n > 0
+	gt $2 $0 $1
+	jz $2 .L2
+		stb $0 $0 0 		# store n at memory[n] as 8-bit
+		addi $0 $0 -1		# n -= 1
+		jmp .L1
+	.L2
+
+	libc $1 $15 @sum		# sum library call
+	libc $1 $1 @output		# print n
+halt
