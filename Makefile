@@ -1,4 +1,8 @@
-FLAGS = -ldl
+ifeq ($(OS),Windows_NT)
+    FLAGS =
+else
+    FLAGS = -ldl
+endif
 FILES = src/Main.cpp src/SVM.cpp src/StrUtil.cpp src/LibCall.cpp
 OUT = bin/SVM
 COMPILE = g++ $(FILES) -o $(OUT) $(FLAGS)
