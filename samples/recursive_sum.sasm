@@ -1,0 +1,43 @@
+# recursive sum program
+# read integer n (n > 0), returns 1 + ... + n
+
+start
+	ldi $15 65535
+	libc $0 $0 @input
+
+	str $0 $15 -1 			# store parameter
+	addi $15 $15 -2
+	jal $14 .sum 			# call function
+	addi $15 $15 2 			# pop parameter from stack
+
+	libc $0 $13 @output
+halt
+
+# sum function
+# sum(0) = 0; sum(n) = n + sum(n-1)
+.sum
+	str $14 $15 -1 			# store return address
+	addi $15 $15 -2
+
+	ld $8 $15 3
+
+
+	ldi $13 0
+	jz $8 .sum.1 			# base: if 0 return 0
+		str $8 $15 -1 		# store local variable
+		addi $15 $15 -2
+
+		addi $9 $8 -1
+		str $9 $15 -1 		# store parameter
+		addi $15 $15 -2
+		jal $14 .sum 		# recursive call
+		addi $15 $15 2 		# pop parameter from stack
+
+		addi $15 $15 4
+		ld $8 $15 -1 		# restore local variable
+		add $13 $13 $8
+	.sum.1
+
+	addi $15 $15 2			# restore return address
+	ld $14 $15 -1
+jr $14

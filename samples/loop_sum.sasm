@@ -1,0 +1,18 @@
+# while-loop sum program
+# read integer n (n > 0), returns 1 + ... + n
+
+start
+	libc $0 $0 @input		# read n
+	ldi $1 0
+	ldi $3 0				# sum = 0
+
+	.L1 					# while n > 0
+	gt $2 $0 $1
+	jz $2 .L2
+		add $3 $3 $0 		# sum += n
+		addi $0 $0 -1		# n -= 1
+		jmp .L1
+	.L2
+
+	libc $3 $3 @output		# print sum
+halt

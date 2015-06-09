@@ -1,0 +1,11 @@
+# simple test program
+# read integer a & b, returns a + b
+
+start
+	libc $0 $0 @input
+	libc $1 $1 @input
+
+	add $2 $0 $1
+
+	libc $2 $2 @output
+halt
