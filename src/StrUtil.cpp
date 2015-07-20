@@ -1,10 +1,10 @@
-#include "StrUtil.hpp"
+#include "strutil.hpp"
 
-string StrTrim(const string &s) {
-    return StrTrimLeft(StrTrimRight(s));
+string strTrim(const string &s) {
+    return strTrimLeft(strTrimRight(s));
 }
 
-string StrTrimLeft(const string &s) {
+string strTrimLeft(const string &s) {
     size_t startpos = s.find_first_not_of(" \t");
     if (string::npos != startpos)
         return s.substr(startpos);
@@ -12,7 +12,7 @@ string StrTrimLeft(const string &s) {
         return s;
 }
 
-string StrTrimRight(const string& s) {
+string strTrimRight(const string& s) {
     size_t endpos = s.find_last_not_of(" \t");
     if (string::npos != endpos)
         return s.substr(0, endpos+1);
@@ -20,7 +20,7 @@ string StrTrimRight(const string& s) {
         return s;
 }
 
-vector<string> StrSplit(const string &s, char delim) {
+vector<string> strSplit(const string &s, char delim) {
     vector<string> elems;
     stringstream ss(s);
     string item;
@@ -29,18 +29,11 @@ vector<string> StrSplit(const string &s, char delim) {
     return elems;
 }
 
-vector<string> StrSplitByWhitespace(const string& s) {
+vector<string> strSplitByWhitespace(const string& s) {
     stringstream ss(s);
     string item;
     vector<string> elems;
     while (ss >> item)
         elems.push_back(item);
     return elems;
-}
-
-int StrToInt(const string& s) {
-    stringstream ss(s);
-    int val;
-    ss >> val;
-    return val;
 }

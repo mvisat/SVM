@@ -1,28 +1,23 @@
-#include "SVM.hpp"
+#include "svm.hpp"
 
-const int SVM::MaxRegister = 16;
-const int SVM::MaxMemory = 65536;
-
-SVM::SVM() {
-
+svm::svm(const string& fileName /* = "" */ ) {
+    initialize();
+    if (fileName.size() > 0)
+        load(fileName);
 }
 
-SVM::SVM(const string& FileName) {
-    Load(FileName);
+svm::~svm() {
+    for (int i = 0; i < cmdList.size(); ++i)
+        delete cmdList[i];
 }
 
-SVM::~SVM() {
-    for (map<string, lib_t>::iterator it = LibHandle.begin(); it != LibHandle.end(); ++it)
-        LibUnload(it->second);
-}
-
-void SVM::Load(const string& FileName) {
-    Syntax.clear();
-    ifstream input(FileName.c_str());
+void svm::load(const string& fileName) {
+    syntax.clear();
+    ifstream input(fileName.c_str());
     if (input.is_open()) {
         string s;
         while (getline(input, s)) {
-            vector<string> v = StrSplitByWhitespace(s);
+            vector<string> v = strSplitByWhitespace(s);
             for (int i = 0; i < v.size(); ++i) {
                 if (v[i] == "#") {
                     while (i < v.size())
@@ -31,282 +26,82 @@ void SVM::Load(const string& FileName) {
                 }
             }
             if (v.size())
-                Syntax.push_back(v);
+                syntax.push_back(v);
         }
 
         #ifdef DEBUG
-            for (int i = 0; i < Syntax.size(); ++i) {
-                for (int j = 0; j < Syntax[i].size(); ++j) {
-                    cout << Syntax[i][j] << " ";
-                }
+            for (int i = 0; i < syntax.size(); ++i) {
+                for (int j = 0; j < syntax[i].size(); ++j)
+                    cout << syntax[i][j] << " ";
                 cout << endl;
             }
         #endif
     }
     else {
-        throw SVMException("Error: Failed to read file '" + FileName + "'");
+        throw svm_exception("Error: Failed to read file '" + fileName + "'");
     }
 }
 
-void SVM::Initialize() {
-    Halt = false;
-    ProgramCounter = 0;
-    LastHandle = NULL;
-
-    Register.clear();
-    for (int i = 0; i < MaxRegister; ++i)
-        Register.push_back(0);
-
-    Memory.clear();
-    for (int i = 0; i < MaxMemory; ++i)
-        Memory.push_back(0);
-
-    Label.clear();
-    for (int i = 0; i < Syntax.size(); ++i) {
-        if (Syntax[i][0][0] == '.') {
-            Label[Syntax[i][0]] = i;
-        }
-    }
-}
-
-void SVM::Run() {
-    if (Syntax.size() == 0)
+void svm::run() {
+    if (syntax.size() == 0)
         return;
 
-    Initialize();
-    while (ProgramCounter < Syntax.size() && !Halt) {
+    svmMemory.clear();
+    for (int i = 0; i < syntax.size(); ++i) {
+        if (syntax[i][0][0] == '.')
+            svmMemory.setLabel(syntax[i][0], i);
+    }
+    while (svmMemory.getProgramCounter() < syntax.size() && !svmMemory.getHalt()) {
         #ifdef DEBUG
-            cout << "Run:: " << ProgramCounter << " ";
-            for (int i = 0; i < Syntax[ProgramCounter].size(); ++i)
-                cout << Syntax[ProgramCounter][i] << " ";
+            cout << "Run:: " << svmMemory.getProgramCounter() << " ";
+            for (int i = 0; i < syntax[svmMemory.getProgramCounter()].size(); ++i)
+                cout << syntax[svmMemory.getProgramCounter()][i] << " ";
             cout << endl;
         #endif
 
-        Process(Syntax[ProgramCounter]);
-        ++ProgramCounter;
+        cmdInvoker.execute(syntax[svmMemory.getProgramCounter()]);
+        svmMemory.setProgramCounter(svmMemory.getProgramCounter()+1);
 
         #ifdef DEBUG
-            for (int i = 0; i < MaxRegister; ++i)
-                cout << "$" << i << " = " << Register[i] << endl;
+            for (int i = 0; i < memory::MAX_REGISTER; ++i)
+                cout << "$" << i << " = " << svmMemory.getRegister(i) << endl;
             for (int i = 0; i < 10; ++i)
-                cout << (int)Memory[i] << " ";
+                cout << (int)svmMemory.getMemory(i) << " ";
+            cout << endl;
+            for (int i = memory::MAX_MEMORY-10; i < memory::MAX_MEMORY; ++i)
+                cout << (int)svmMemory.getMemory(i) << " ";
             cout << endl;
         #endif
     }
 }
 
-void SVM::Process(const vector<string>& cmd) {
-    if (cmd.size() == 0 || cmd[0] == "start" || cmd[0] == "#" || cmd[0][0] == '.') {
-        // Do nothing
-    }
-    else if (cmd[0] == "halt") {
-        Halt = true;
-    }
-    else if (cmd[0] == "add") {
-        CmdAdd(ParseRegister(cmd[1]), ParseRegister(cmd[2]), ParseRegister(cmd[3]));
-    }
-    else if (cmd[0] == "addi") {
-        CmdAddImmediate(ParseRegister(cmd[1]), ParseRegister(cmd[2]), StrToInt(cmd[3]));
-    }
-    else if (cmd[0] == "sub") {
-        CmdSubstract(ParseRegister(cmd[1]), ParseRegister(cmd[2]), ParseRegister(cmd[3]));
-    }
-    else if (cmd[0] == "mul") {
-        CmdMultiply(ParseRegister(cmd[1]), ParseRegister(cmd[2]), ParseRegister(cmd[3]));
-    }
-    else if (cmd[0] == "and") {
-        CmdAnd(ParseRegister(cmd[1]), ParseRegister(cmd[2]), ParseRegister(cmd[3]));
-    }
-    else if (cmd[0] == "or") {
-        CmdOr(ParseRegister(cmd[1]), ParseRegister(cmd[2]), ParseRegister(cmd[3]));
-    }
-    else if (cmd[0] == "not") {
-        CmdNot(ParseRegister(cmd[1]), ParseRegister(cmd[2]));
-    }
-    else if (cmd[0] == "eq") {
-        CmdEqual(ParseRegister(cmd[1]), ParseRegister(cmd[2]), ParseRegister(cmd[3]));
-    }
-    else if (cmd[0] == "lt") {
-        CmdLessThan(ParseRegister(cmd[1]), ParseRegister(cmd[2]), ParseRegister(cmd[3]));
-    }
-    else if (cmd[0] == "gt") {
-        CmdGreaterThan(ParseRegister(cmd[1]), ParseRegister(cmd[2]), ParseRegister(cmd[3]));
-    }
-    else if (cmd[0] == "ld") {
-        CmdLoad(ParseRegister(cmd[1]), ParseRegister(cmd[2]), StrToInt(cmd[3]));
-    }
-    else if (cmd[0] == "lb") {
-        CmdLoadByte(ParseRegister(cmd[1]), ParseRegister(cmd[2]), StrToInt(cmd[3]));
-    }
-    else if (cmd[0] == "ldi") {
-        CmdLoadImmediate(ParseRegister(cmd[1]), StrToInt(cmd[2]));
-    }
-    else if (cmd[0] == "str") {
-        CmdStore(ParseRegister(cmd[1]), ParseRegister(cmd[2]), StrToInt(cmd[3]));
-    }
-    else if (cmd[0] == "stb") {
-        CmdStoreByte(ParseRegister(cmd[1]), ParseRegister(cmd[2]), StrToInt(cmd[3]));
-    }
-    else if (cmd[0] == "jz") {
-        CmdJumpIfZero(ParseRegister(cmd[1]), cmd[2]);
-    }
-    else if (cmd[0] == "jnz") {
-        CmdJumpIfNotZero(ParseRegister(cmd[1]), cmd[2]);
-    }
-    else if (cmd[0] == "jmp") {
-        CmdJump(cmd[1]);
-    }
-    else if (cmd[0] == "jr") {
-        CmdJumpRegister(ParseRegister(cmd[1]));
-    }
-    else if (cmd[0] == "jal") {
-        CmdJumpAndLink(ParseRegister(cmd[1]), cmd[2]);
-    }
-    else if (cmd[0] == "libc") {
-        CmdLibraryCall(ParseRegister(cmd[1]), ParseRegister(cmd[2]), cmd[3]);
-    }
-    else if (cmd[0] == "lopen") {
-        CmdLibraryOpen(cmd[1]);
-    }
-    else if (cmd[0] == "link") {
-        CmdLibraryLink(cmd[1]);
-    }
-    else {
-        throw SVMException("Error: Invalid syntax '" + cmd[0] + "'");
-    }
-}
+void svm::initialize() {
+    cmdList.push_back(new commandStart(&svmMemory));
+    cmdList.push_back(new commandAdd(&svmMemory));
+    cmdList.push_back(new commandAddImmediate(&svmMemory));
+    cmdList.push_back(new commandSubstract(&svmMemory));
+    cmdList.push_back(new commandMultiply(&svmMemory));
+    cmdList.push_back(new commandAnd(&svmMemory));
+    cmdList.push_back(new commandOr(&svmMemory));
+    cmdList.push_back(new commandNot(&svmMemory));
+    cmdList.push_back(new commandEqual(&svmMemory));
+    cmdList.push_back(new commandLessThan(&svmMemory));
+    cmdList.push_back(new commandGreaterThan(&svmMemory));
+    cmdList.push_back(new commandLoad(&svmMemory));
+    cmdList.push_back(new commandLoadByte(&svmMemory));
+    cmdList.push_back(new commandLoadImmediate(&svmMemory));
+    cmdList.push_back(new commandStore(&svmMemory));
+    cmdList.push_back(new commandStoreByte(&svmMemory));
+    cmdList.push_back(new commandJumpIfZero(&svmMemory));
+    cmdList.push_back(new commandJumpIfNotZero(&svmMemory));
+    cmdList.push_back(new commandJump(&svmMemory));
+    cmdList.push_back(new commandJumpRegister(&svmMemory));
+    cmdList.push_back(new commandJumpAndLink(&svmMemory));
+    cmdList.push_back(new commandLibraryCall(&svmMemory));
+    cmdList.push_back(new commandHalt(&svmMemory));
+    cmdList.push_back(new commandLibraryOpen(&svmMemory));
+    cmdList.push_back(new commandLibraryLink(&svmMemory));
 
-int SVM::ParseRegister(const string& s) {
-    return StrToInt(s.substr(1));
-}
-
-void SVM::CmdAdd(int rDest, int rSrc1, int rSrc2) {
-    Register[rDest] = Register[rSrc1] + Register[rSrc2];
-}
-
-void SVM::CmdAddImmediate(int rDest, int rSrc, int C) {
-    Register[rDest] = Register[rSrc] + C;
-}
-
-void SVM::CmdSubstract(int rDest, int rSrc1, int rSrc2) {
-    Register[rDest] = Register[rSrc1] - Register[rSrc2];
-}
-
-void SVM::CmdMultiply(int rDest, int rSrc1, int rSrc2) {
-    Register[rDest] = Register[rSrc1] * Register[rSrc2];
-}
-
-void SVM::CmdAnd(int rDest, int rSrc1, int rSrc2) {
-    Register[rDest] = Register[rSrc1] && Register[rSrc2];
-}
-
-void SVM::CmdOr(int rDest, int rSrc1, int rSrc2) {
-    Register[rDest] = Register[rSrc1] || Register[rSrc2];
-}
-
-void SVM::CmdNot(int rDest, int rSrc) {
-    Register[rDest] = !Register[rSrc];
-}
-
-void SVM::CmdEqual(int rDest, int rSrc1, int rSrc2) {
-    Register[rDest] = Register[rSrc1] == Register[rSrc2];
-}
-
-void SVM::CmdLessThan(int rDest, int rSrc1, int rSrc2) {
-    Register[rDest] = Register[rSrc1] < Register[rSrc2];
-}
-
-void SVM::CmdGreaterThan(int rDest, int rSrc1, int rSrc2) {
-    Register[rDest] = Register[rSrc1] > Register[rSrc2];
-}
-
-void SVM::CmdLoad(int rDest, int rSrc, int C) {
-    Register[rDest] = Memory[Register[rSrc] + C] | (Memory[Register[rSrc] + C + 1] << 8);
-}
-
-void SVM::CmdLoadByte(int rDest, int rSrc, int C) {
-    Register[rDest] = Memory[Register[rSrc] + C];
-}
-
-void SVM::CmdLoadImmediate(int rDest, int C) {
-    Register[rDest] = C;
-}
-
-void SVM::CmdStore(int rDest, int rSrc, int C) {
-    Memory[Register[rSrc] + C] = Register[rDest] & 0xFF;
-    Memory[Register[rSrc] + C + 1] = Register[rDest] & 0xFF00;
-}
-
-void SVM::CmdStoreByte(int rDest, int rSrc, int C) {
-    Memory[Register[rSrc] + C] = Register[rDest] & 0xFF;
-}
-
-void SVM::CmdJumpIfZero(int rDest, const string& label) {
-    if (Register[rDest] == 0)
-        ProgramCounter = Label[label];
-}
-
-void SVM::CmdJumpIfNotZero(int rDest, const string& label) {
-    if (Register[rDest] != 0)
-        ProgramCounter = Label[label];
-}
-
-void SVM::CmdJump(const string& label) {
-    ProgramCounter = Label[label];
-}
-
-void SVM::CmdJumpRegister(int rDest) {
-    ProgramCounter = Register[rDest];
-}
-
-void SVM::CmdJumpAndLink(int rDest, const string& label) {
-    Register[rDest] = ProgramCounter;
-    ProgramCounter = Label[label];
-}
-
-void SVM::CmdLibraryCall(int rDest, int rSrc, const string& func) {
-    if (func == "@input") {
-        int in;
-        cin >> in;
-        Register[rDest] = in;
-    }
-    else if (func == "@output") {
-        cout << Register[rSrc] << endl;
-    }
-    else {
-        FuncPrototype f = LibFunction[func];
-        f(&Register[rDest], Register[rSrc], Memory.data());
-    }
-}
-
-void SVM::CmdLibraryOpen(const string& lib) {
-    if (LibHandle.find(lib) == LibHandle.end()) {
-        lib_t handle = NULL;
-        #ifdef _WIN32
-            handle = LibLoad(lib.c_str());
-        #else
-            if (lib.size() && (lib[0] == '.' || lib[0] == '/'))
-                handle = LibLoad(lib.c_str());
-            else
-                handle = LibLoad(("./" + lib).c_str());
-        #endif
-        if (handle) {
-            LibHandle[lib] = handle;
-            LastHandle = handle;
-        }
-        else {
-            throw SVMException("Error: Failed to load library '" + lib + "'");
-        }
-    }
-
-}
-
-void SVM::CmdLibraryLink(const string& func) {
-    if (LastHandle) {
-        FuncPrototype f = NULL;
-        if (f = (FuncPrototype)::LoadProc(LastHandle, func.substr(1).c_str()))
-            LibFunction[func] = f;
-        else
-            throw SVMException("Error: Failed to link function '" + func + "'");
-    }
+    for (int i = 0; i < cmdList.size(); ++i)
+        cmdInvoker.add(cmdList[i]);
 }

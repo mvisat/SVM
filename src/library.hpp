@@ -1,5 +1,5 @@
-#ifndef LIB_CALL_H
-#define LIB_CALL_H
+#ifndef LIBRARY_H
+#define LIBRARY_H
 
 #ifdef _WIN32
     #include <windows.h>

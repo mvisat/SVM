@@ -1,4 +1,4 @@
-#include "LibCall.hpp"
+#include "library.hpp"
 
 lib_t LibLoad(const char* szLib) {
 #ifdef _WIN32

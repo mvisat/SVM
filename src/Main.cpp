@@ -1,4 +1,4 @@
-#include "SVM.hpp"
+#include "svm.hpp"
 
 #include <exception>
 #include <iostream>
@@ -7,10 +7,10 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
     if (argc == 2) {
-        string FileName(argv[1]);
+        string fileName(argv[1]);
         try {
-            SVM svm(FileName);
-            svm.Run();
+            svm svm(fileName);
+            svm.run();
             return 0;
         }
         catch (const exception& e) {
@@ -20,6 +20,6 @@ int main(int argc, char* argv[]) {
     }
     else {
         cout << "Usage:\tsvm [sasm file]" << endl;
-        return 0;
     }
+    return 0;
 }
