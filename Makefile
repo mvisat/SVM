@@ -19,11 +19,11 @@ vpath %.cpp $(MODULE_SRC_DIR)
 
 define make-goal
 $1/%.o: %.cpp
-	$(CXX) $(INCLUDES) -c $$< -o $$@ $(CXXFLAGS)
+	$(CXX) $(INCLUDES) -c $$< -o $$@ $(CXXFLAGS) $(LDFLAGS)
 endef
 
 define make-bin
-	$(CXX) $(LDFLAGS) $^ -o $(BIN_DIR)/$@ $(CXXFLAGS)
+	$(CXX) $^ -o $(BIN_DIR)/$@ $(CXXFLAGS) $(LDFLAGS)
 endef
 
 .PHONY: all checkdirs clean
