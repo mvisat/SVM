@@ -1,0 +1,76 @@
+# test all command
+start
+    libc $1 $1 @input
+    libc $1 $1 @output
+
+    libc $2 $2 @input
+    libc $2 $2 @output
+
+    add $0 $1 $2        # $0 = $1 + $2
+    libc $0 $0 @output
+
+    addi $0 $1 1000     # $0 = $1 + 1000
+    libc $0 $0 @output
+
+    sub $0 $1 $2        # $0 = $1 - $2
+    libc $0 $0 @output
+
+    mul $0 $1 $2        # $0 = $1 * $2
+    libc $0 $0 @output
+
+    and $0 $1 $2        # $0 = $1 && $2
+    libc $0 $0 @output
+
+    or $0 $1 $2         # $0 = $1 || $2
+    libc $0 $0 @output
+
+    not $0 $1           # $0 = !$1
+    libc $0 $0 @output
+
+    eq $0 $1 $2         # $0 = $1 == $2
+    libc $0 $0 @output
+
+    lt $0 $1 $2         # $0 = $1 < $2
+    libc $0 $0 @output
+
+    gt $0 $1 $2         # $0 = $1 > $2
+    libc $0 $0 @output
+
+    ldi $0 1000         # $0 = 1000
+    libc $0 $0 @output
+
+    ldi $1 0
+    str $0 $1 0         # M[0] = 1000
+    ld $3 $1 0          # $3 = M[0]
+    libc $3 $3 @output
+
+    stb $0 $1 0         # M[0] = 1000 & 0xFF // -24
+    lb $4 $1 0          # $4 = M[0]
+    libc $4 $4 @output
+
+    ldi $0 0
+    jz $0 .test_jz
+        ldi $0 69
+        libc $0 $0 @output
+    .test_jz
+
+    ldi $0 -1
+    jnz $0 .test_jnz
+       ldi $0 69
+       libc $0 $0 @output
+    .test_jnz
+
+    jmp .test_jmp
+       ldi $0 69
+       libc $0 $0 @output
+    .test_jmp
+
+    jal $14 .test_jal
+    ldi $0 -999
+    libc $0 $0 @output
+halt
+
+ .test_jal
+    ldi $0 20
+    libc $0 $0 @output
+ jr $14

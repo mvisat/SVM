@@ -10,7 +10,7 @@ void commandJump::execute(const vector<opcode_t>& cmd) {
     pointer = pointer + 1;
     counter_t address = 0;
     for (unsigned int i = 0; i < sizeof(counter_t); ++i) {
-        address = address | (cmd[pointer+i] << (8*i));
+        address = address | (cmd[pointer+i] << (i << 3));
     }
     execute(address);
 }

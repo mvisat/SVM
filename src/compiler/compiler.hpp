@@ -47,7 +47,6 @@ public:
 private:
     vector<vector<string> > syntax;
     vector<command*> cmdList;
-    memory svmMemory;
     invoker cmdInvoker;
     ofstream outStream;
     map<string, vector<counter_t> > jumpTable;

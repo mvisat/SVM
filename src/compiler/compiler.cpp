@@ -43,6 +43,7 @@ void compiler::compile(const string& source) {
         else
             cmdInvoker.write_bytecode(syntax[i]);
     }
+
     for (map<string, vector<counter_t> >::iterator it = jumpTable.begin(); it != jumpTable.end(); ++it) {
         vector<opcode_t> jumpBuf;
         counter_t jump = labelTable[it->first];
@@ -56,6 +57,8 @@ void compiler::compile(const string& source) {
             outStream.write(jumpBuf.data(), jumpBuf.size());
         }
     }
+    outStream.close();
+    jumpTable.clear();
 }
 
 void compiler::initialize() {
