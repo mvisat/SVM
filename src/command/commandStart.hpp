@@ -3,18 +3,19 @@
 
 #include "command.hpp"
 
-
 using namespace std;
 
 class commandStart: public command {
 public:
+    commandStart(ofstream *o) { outStream = o; };
     commandStart(memory *i) { svmMemory = i; };
-    string getName() { return "start"; };
-    int getNumberOfOperands() { return 1; };
-    void execute(const vector<string>& cmd) {
-    };
-private:
-    memory *svmMemory;
+    string name() { return "start"; };
+    opcode_t opcode() { return 1; };
+    unsigned int get_operand_size() { return 1; };
+    void execute(const vector<string>& cmd);
+    void execute(const vector<opcode_t>& cmd);
+    void execute();
+    void write_bytecode(const vector<string>& cmd);
 };
 
 #endif

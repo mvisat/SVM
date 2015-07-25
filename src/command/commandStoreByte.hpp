@@ -3,26 +3,19 @@
 
 #include "command.hpp"
 
-
 using namespace std;
 
 class commandStoreByte: public command {
 public:
+    commandStoreByte(ofstream *o) { outStream = o; };
     commandStoreByte(memory *i) { svmMemory = i; };
-    string getName() { return "stb"; };
-    int getNumberOfOperands() { return 4; };
-    void execute(const vector<string>& cmd) {
-        if (svmMemory != 0) {
-            int rDest = parseRegister(cmd[1]);
-            int rSrc = parseRegister(cmd[2]);
-            int C = parseConstant(cmd[3]);
-            svmMemory->setMemory(
-                (address_t)svmMemory->getRegister(rSrc) + (address_t)C,
-                svmMemory->getRegister(rDest) & 0xFF);
-        }
-    };
-private:
-    memory *svmMemory;
+    string name() { return "stb"; };
+    opcode_t opcode() { return 16; };
+    unsigned int get_operand_size() { return 4; };
+    void execute(const vector<string>& cmd);
+    void execute(const vector<opcode_t>& cmd);
+    void execute(index_t rDest, index_t rSrc, address_t C);
+    void write_bytecode(const vector<string>& cmd);
 };
 
 #endif

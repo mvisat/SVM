@@ -3,24 +3,19 @@
 
 #include "command.hpp"
 
-
 using namespace std;
 
 class commandAnd: public command {
 public:
-    commandAnd(memory *i) { svmMemory = i; };
-    string getName() { return "and"; };
-    int getNumberOfOperands() { return 4; };
-    void execute(const vector<string>& cmd) {
-        if (svmMemory != 0) {
-            int rDest = parseRegister(cmd[1]);
-            int rSrc1 = parseRegister(cmd[2]);
-            int rSrc2 = parseRegister(cmd[3]);
-            svmMemory->setRegister(rDest, svmMemory->getRegister(rSrc1) && svmMemory->getRegister(rSrc2));
-        }
-    };
-private:
-    memory *svmMemory;
+    commandAnd(ofstream *o) { outStream = o; }
+    commandAnd(memory *i) { svmMemory = i; }
+    string name() { return "and"; }
+    opcode_t opcode() { return 6; }
+    unsigned int get_operand_size() { return 4; }
+    void execute(const vector<string>& cmd);
+    void execute(const vector<opcode_t>& cmd);
+    void execute(index_t rDest, index_t rSrc1, index_t rSrc2);
+    void write_bytecode(const vector<string>& cmd);
 };
 
 #endif

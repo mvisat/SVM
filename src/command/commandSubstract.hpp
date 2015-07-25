@@ -3,24 +3,19 @@
 
 #include "command.hpp"
 
-
 using namespace std;
 
 class commandSubstract: public command {
 public:
+    commandSubstract(ofstream *o) { outStream = o; };
     commandSubstract(memory *i) { svmMemory = i; };
-    string getName() { return "sub"; };
-    int getNumberOfOperands() { return 4; };
-    void execute(const vector<string>& cmd) {
-        if (svmMemory != 0) {
-            int rDest = parseRegister(cmd[1]);
-            int rSrc1 = parseRegister(cmd[2]);
-            int rSrc2 = parseRegister(cmd[3]);
-            svmMemory->setRegister(rDest, svmMemory->getRegister(rSrc1) - svmMemory->getRegister(rSrc2));
-        }
-    };
-private:
-    memory *svmMemory;
+    string name() { return "sub"; };
+    opcode_t opcode() { return 4; };
+    unsigned int get_operand_size() { return 4; };
+    void execute(const vector<string>& cmd);
+    void execute(const vector<opcode_t>& cmd);
+    void execute(index_t rDest, index_t rSrc1, index_t rSrc2);
+    void write_bytecode(const vector<string>& cmd);
 };
 
 #endif

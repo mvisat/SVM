@@ -3,23 +3,19 @@
 
 #include "command.hpp"
 
-
 using namespace std;
 
 class commandLoadImmediate: public command {
 public:
+    commandLoadImmediate(ofstream *o) { outStream = o; };
     commandLoadImmediate(memory *i) { svmMemory = i; };
-    string getName() { return "ldi"; };
-    int getNumberOfOperands() { return 3; };
-    void execute(const vector<string>& cmd) {
-        if (svmMemory != 0) {
-            int rDest = parseRegister(cmd[1]);
-            int C = parseConstant(cmd[2]);
-            svmMemory->setRegister(rDest, C);
-        }
-    };
-private:
-    memory *svmMemory;
+    string name() { return "ldi"; };
+    opcode_t opcode() { return 14; };
+    unsigned int get_operand_size() { return 3; };
+    void execute(const vector<string>& cmd);
+    void execute(const vector<opcode_t>& cmd);
+    void execute(index_t rDest, register_t C);
+    void write_bytecode(const vector<string>& cmd);
 };
 
 #endif

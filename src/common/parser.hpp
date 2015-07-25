@@ -6,9 +6,12 @@
 #include "strutil.hpp"
 #include "memory.hpp"
 
+#include <fstream>
+
 using namespace std;
 
-int parseRegister(const string& s);
-constant_t parseConstant(const string& s);
+vector<vector<string> > parse_file(const string& file);
+int parse_register(const string& s);
+constant_t parse_constant(const string& s);
 
 #endif

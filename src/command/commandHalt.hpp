@@ -7,16 +7,15 @@ using namespace std;
 
 class commandHalt: public command {
 public:
-    commandHalt(memory *i) { svmMemory = i; };
-    string getName() { return "halt"; };
-    int getNumberOfOperands() { return 1; };
-    void execute(const vector<string>& cmd) {
-        if (svmMemory != 0) {
-            svmMemory->setHalt(true);
-        }
-    };
-private:
-    memory *svmMemory;
+    commandHalt(ofstream *o) { outStream = o; }
+    commandHalt(memory *i) { svmMemory = i; }
+    string name() { return "halt"; }
+    opcode_t opcode() { return 23; }
+    unsigned int get_operand_size() { return 1; }
+    void execute(const vector<string>& cmd);
+    void execute(const vector<opcode_t>& cmd);
+    void execute();
+    void write_bytecode(const vector<string>& cmd);
 };
 
 #endif
