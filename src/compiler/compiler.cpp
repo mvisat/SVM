@@ -19,7 +19,7 @@ void compiler::compile(const string& source) {
     if (!outStream.is_open())
         throw svm_exception("Error: Failed to write file '" + target + "'");
 
-    vector<opcode_t> kei_header;
+    vector<bytecode_t> kei_header;
     // magic string
     kei_header.push_back(0x03);
     kei_header.push_back(0x6b);
@@ -45,7 +45,7 @@ void compiler::compile(const string& source) {
     }
 
     for (map<string, vector<counter_t> >::iterator it = jumpTable.begin(); it != jumpTable.end(); ++it) {
-        vector<opcode_t> jumpBuf;
+        vector<bytecode_t> jumpBuf;
         counter_t jump = labelTable[it->first];
         for (unsigned int j = 0; j < sizeof(counter_t); ++j) {
             jumpBuf.push_back(jump & 0xFF);
@@ -62,6 +62,7 @@ void compiler::compile(const string& source) {
 }
 
 void compiler::initialize() {
+    cmdList.push_back(new commandNoOperation(&outStream));
     cmdList.push_back(new commandStart(&outStream));
     cmdList.push_back(new commandAdd(&outStream));
     cmdList.push_back(new commandAddImmediate(&outStream));

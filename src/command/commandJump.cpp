@@ -5,7 +5,7 @@ void commandJump::execute(const vector<string>& cmd) {
     execute(svmMemory->get_label(label));
 }
 
-void commandJump::execute(const vector<opcode_t>& cmd) {
+void commandJump::execute(const vector<bytecode_t>& cmd) {
     counter_t pointer = svmMemory->get_program_counter();
     pointer = pointer + 1;
     counter_t address = 0;
@@ -21,11 +21,11 @@ void commandJump::execute(counter_t address) {
 
 void commandJump::write_bytecode(const vector<string>& cmd) {
     string label = cmd[1];
-    vector<char> code;
-    code.push_back(opcode());
+    vector<bytecode_t> bytecode;
+    bytecode.push_back(mnemonic_code());
     for (unsigned int i = 0; i < sizeof(counter_t); ++i)
-        code.push_back(0);
-    outStream->write(code.data(), code.size());
+        bytecode.push_back(0);
+    outStream->write(bytecode.data(), bytecode.size());
     counter_t jumpAddress = outStream->tellp();
     (*jumpTable)[label].push_back(jumpAddress-sizeof(counter_t));
 }

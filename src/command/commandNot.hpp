@@ -10,10 +10,10 @@ public:
     commandNot(ofstream *o) { outStream = o; };
     commandNot(memory *i) { svmMemory = i; };
     string name() { return "not"; };
-    opcode_t opcode() { return 8; };
-    unsigned int get_operand_size() { return 3; };
+    bytecode_t mnemonic_code() { return 8; };
+    unsigned int operand_size() { return 3; };
     void execute(const vector<string>& cmd);
-    void execute(const vector<opcode_t>& cmd);
+    void execute(const vector<bytecode_t>& cmd);
     void execute(index_t rDest, index_t rSrc);
     void write_bytecode(const vector<string>& cmd);
 };

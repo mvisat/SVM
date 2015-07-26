@@ -6,6 +6,7 @@
 
 #include "../command/invoker.hpp"
 #include "../command/command.hpp"
+#include "../command/commandNoOperation.hpp"
 #include "../command/commandStart.hpp"
 #include "../command/commandAdd.hpp"
 #include "../command/commandAddImmediate.hpp"

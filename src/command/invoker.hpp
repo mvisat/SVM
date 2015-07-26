@@ -15,7 +15,7 @@ public:
 
     void add(command *c);
     void execute(const vector<string>& cmd);
-    void execute(const vector<opcode_t>& cmd, counter_t pointer);
+    void execute(const vector<bytecode_t>& cmd, counter_t pointer);
     void write_bytecode(const vector<string>& cmd);
 private:
     map<string, command*> mapOfCommandName;

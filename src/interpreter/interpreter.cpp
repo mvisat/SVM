@@ -11,12 +11,12 @@ interpreter::~interpreter() {
 
 bool interpreter::is_kei(const string& filename) {
     ifstream ifs(filename.c_str(), ios::binary);
-    vector<opcode_t> bytecode(KEI_HEADER_SIZE);
+    vector<bytecode_t> bytecode(KEI_HEADER_SIZE);
     ifs.read(bytecode.data(), KEI_HEADER_SIZE);
     return is_kei(bytecode);
 }
 
-bool interpreter::is_kei(const vector<opcode_t>& bytecode) {
+bool interpreter::is_kei(const vector<bytecode_t>& bytecode) {
     if (bytecode.size() >= KEI_HEADER_SIZE) {
         return
             bytecode[0] == 0x03 &&
@@ -67,7 +67,7 @@ void interpreter::run_kei(const string& filename) {
         throw svm_exception("Error: Failed to read file '" + filename + "'");
 
     ifstream::pos_type size = ifs.tellg();
-    vector<opcode_t> bytecode(size);
+    vector<bytecode_t> bytecode(size);
     ifs.seekg(0, ios::beg);
     ifs.read(bytecode.data(), size);
     if (!is_kei(bytecode))
@@ -81,6 +81,7 @@ void interpreter::run_kei(const string& filename) {
 }
 
 void interpreter::initialize() {
+    cmdList.push_back(new commandNoOperation(&svmMemory));
     cmdList.push_back(new commandStart(&svmMemory));
     cmdList.push_back(new commandAdd(&svmMemory));
     cmdList.push_back(new commandAddImmediate(&svmMemory));

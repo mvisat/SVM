@@ -7,7 +7,7 @@ void commandLibraryCall::execute(const vector<string>& cmd) {
     execute(rDest, rSrc, func);
 }
 
-void commandLibraryCall::execute(const vector<opcode_t>& cmd) {
+void commandLibraryCall::execute(const vector<bytecode_t>& cmd) {
     counter_t pointer = svmMemory->get_program_counter();
     index_t rDest = cmd[pointer+1] & 0x0F;
     index_t rSrc = (cmd[pointer+1] & 0xF0) >> 4;
@@ -43,11 +43,11 @@ void commandLibraryCall::write_bytecode(const vector<string>& cmd) {
     index_t rDest = parse_register(cmd[1]);
     index_t rSrc = parse_register(cmd[2]);
     string func = cmd[3];
-    vector<char> code;
-    code.push_back(opcode());
-    code.push_back((rDest & 0x0F) | ((rSrc & 0x0F) << 4));
+    vector<bytecode_t> bytecode;
+    bytecode.push_back(mnemonic_code());
+    bytecode.push_back((rDest & 0x0F) | ((rSrc & 0x0F) << 4));
     for (unsigned int i = 0; i < func.size(); ++i)
-        code.push_back(func[i]);
-    code.push_back(0x00);
-    outStream->write(code.data(), code.size());
+        bytecode.push_back(func[i]);
+    bytecode.push_back(0x00);
+    outStream->write(bytecode.data(), bytecode.size());
 }

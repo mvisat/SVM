@@ -3,7 +3,7 @@
 void commandStart::execute(const vector<string>& cmd) {
 }
 
-void commandStart::execute(const vector<opcode_t>& cmd) {
+void commandStart::execute(const vector<bytecode_t>& cmd) {
     counter_t pointer = svmMemory->get_program_counter();
     execute();
     svmMemory->set_program_counter(pointer+1);
@@ -13,7 +13,7 @@ void commandStart::execute() {
 }
 
 void commandStart::write_bytecode(const vector<string>& cmd) {
-    vector<char> code;
-    code.push_back(opcode());
-    outStream->write(code.data(), code.size());
+    vector<bytecode_t> bytecode;
+    bytecode.push_back(mnemonic_code());
+    outStream->write(bytecode.data(), bytecode.size());
 }

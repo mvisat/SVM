@@ -6,7 +6,7 @@ void commandJumpAndLink::execute(const vector<string>& cmd) {
     execute(rDest, svmMemory->get_label(label));
 }
 
-void commandJumpAndLink::execute(const vector<opcode_t>& cmd) {
+void commandJumpAndLink::execute(const vector<bytecode_t>& cmd) {
     counter_t pointer = svmMemory->get_program_counter();
     index_t rDest = cmd[pointer+1] & 0x0F;
     pointer = pointer + 2;
@@ -27,12 +27,12 @@ void commandJumpAndLink::execute(index_t rDest, counter_t address) {
 void commandJumpAndLink::write_bytecode(const vector<string>& cmd) {
     index_t rDest = parse_register(cmd[1]);
     string label = cmd[2];
-    vector<char> code;
-    code.push_back(opcode());
-    code.push_back(rDest & 0x0F);
+    vector<bytecode_t> bytecode;
+    bytecode.push_back(mnemonic_code());
+    bytecode.push_back(rDest & 0x0F);
     for (unsigned int i = 0; i < sizeof(counter_t); ++i)
-        code.push_back(0);
-    outStream->write(code.data(), code.size());
+        bytecode.push_back(0);
+    outStream->write(bytecode.data(), bytecode.size());
     counter_t jumpAddress = outStream->tellp();
     (*jumpTable)[label].push_back(jumpAddress-sizeof(counter_t));
 }

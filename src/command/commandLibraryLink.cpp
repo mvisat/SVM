@@ -5,7 +5,7 @@ void commandLibraryLink::execute(const vector<string>& cmd) {
     execute(function_name);
 }
 
-void commandLibraryLink::execute(const vector<opcode_t>& cmd) {
+void commandLibraryLink::execute(const vector<bytecode_t>& cmd) {
     counter_t pointer = svmMemory->get_program_counter();
     pointer = pointer + 1;
     string function_name = "";
@@ -21,10 +21,10 @@ void commandLibraryLink::execute(const string& function_name) {
 
 void commandLibraryLink::write_bytecode(const vector<string>& cmd) {
     string function_name = cmd[1];
-    vector<char> code;
-    code.push_back(opcode());
+    vector<bytecode_t> bytecode;
+    bytecode.push_back(mnemonic_code());
     for (unsigned int i = 0; i < function_name.size(); ++i)
-        code.push_back(function_name[i]);
-    code.push_back(0);
-    outStream->write(code.data(), code.size());
+        bytecode.push_back(function_name[i]);
+    bytecode.push_back(0);
+    outStream->write(bytecode.data(), bytecode.size());
 }

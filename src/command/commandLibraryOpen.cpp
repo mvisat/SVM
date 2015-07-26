@@ -5,7 +5,7 @@ void commandLibraryOpen::execute(const vector<string>& cmd) {
     execute(lib_name);
 }
 
-void commandLibraryOpen::execute(const vector<opcode_t>& cmd) {
+void commandLibraryOpen::execute(const vector<bytecode_t>& cmd) {
     counter_t pointer = svmMemory->get_program_counter();
     pointer = pointer + 1;
     string lib_name;
@@ -21,10 +21,10 @@ void commandLibraryOpen::execute(const string& lib_name) {
 
 void commandLibraryOpen::write_bytecode(const vector<string>& cmd) {
     string lib_name = cmd[1];
-    vector<char> code;
-    code.push_back(opcode());
+    vector<bytecode_t> bytecode;
+    bytecode.push_back(mnemonic_code());
     for (unsigned int i = 0; i < lib_name.size(); ++i)
-        code.push_back(lib_name[i]);
-    code.push_back(0);
-    outStream->write(code.data(), code.size());
+        bytecode.push_back(lib_name[i]);
+    bytecode.push_back(0);
+    outStream->write(bytecode.data(), bytecode.size());
 }

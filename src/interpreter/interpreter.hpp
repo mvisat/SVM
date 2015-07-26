@@ -8,6 +8,7 @@
 
 #include "../command/invoker.hpp"
 #include "../command/command.hpp"
+#include "../command/commandNoOperation.hpp"
 #include "../command/commandAdd.hpp"
 #include "../command/commandAddImmediate.hpp"
 #include "../command/commandAnd.hpp"
@@ -46,7 +47,7 @@ public:
     ~interpreter();
     void run_kei(const string& filename);
     void run_sasm(const string& filename);
-    bool is_kei(const vector<opcode_t>& bytecode);
+    bool is_kei(const vector<bytecode_t>& bytecode);
     bool is_kei(const string& filename);
 
 private:

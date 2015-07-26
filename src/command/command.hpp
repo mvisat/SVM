@@ -43,10 +43,10 @@ class command {
 public:
     virtual ~command() {};
     virtual string name() = 0;
-    virtual opcode_t opcode() = 0;
-    virtual unsigned int get_operand_size() = 0;
+    virtual bytecode_t mnemonic_code() = 0;
+    virtual unsigned int operand_size() = 0;
     virtual void execute(const vector<string>& cmd) = 0;
-    virtual void execute(const vector<opcode_t>& cmd) = 0;
+    virtual void execute(const vector<bytecode_t>& cmd) = 0;
     virtual void write_bytecode(const vector<string>& cmd) = 0;
 protected:
     memory *svmMemory;
