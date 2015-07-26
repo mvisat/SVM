@@ -1,5 +1,5 @@
 
-CXXFLAGS += -O2 -Wall
+CXXFLAGS += -O2 -Wall -m32
 ifneq ($(OS),Windows_NT)
     LDFLAGS += -ldl
 endif
