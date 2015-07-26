@@ -13,5 +13,6 @@ using namespace std;
 vector<vector<string> > parse_file(const string& file);
 int parse_register(const string& s);
 constant_t parse_constant(const string& s);
+string parse_function(const string& s);
 
 #endif

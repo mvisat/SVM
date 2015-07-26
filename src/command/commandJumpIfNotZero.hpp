@@ -10,7 +10,7 @@ public:
     commandJumpIfNotZero(ofstream *o, map<string, vector<counter_t> > *j) { outStream = o; jumpTable = j; }
     commandJumpIfNotZero(memory *i) { svmMemory = i; }
     string name() { return "jnz"; }
-    bytecode_t mnemonic_code() { return 18; }
+    mnemonic_t mnemonic_code() { return 18; }
     unsigned int operand_size() { return 3; }
     void execute(const vector<string>& cmd);
     void execute(const vector<bytecode_t>& cmd);

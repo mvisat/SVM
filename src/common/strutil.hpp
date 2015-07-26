@@ -15,6 +15,7 @@ string str_trim_right(const string &s);
 vector<string> str_split(const string &s, char delim);
 vector<string> str_split_ws(const string& s);
 
+string str_find_ext(const string& s);
 string str_replace_ext(const string& s, const string& ext);
 
 template <typename T>

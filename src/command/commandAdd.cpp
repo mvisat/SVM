@@ -25,7 +25,7 @@ void commandAdd::write_bytecode(const vector<string>& cmd) {
     index_t rSrc1 = parse_register(cmd[2]);
     index_t rSrc2 = parse_register(cmd[3]);
     vector<bytecode_t> bytecode;
-    bytecode.push_back(mnemonic_code());
+    bytecode.push_back(static_cast<bytecode_t>(mnemonic_code()));
     bytecode.push_back((rDest & 0x0F) | ((rSrc1 & 0x0F) << 4));
     bytecode.push_back(rSrc2 & 0x0F);
     outStream->write(bytecode.data(), bytecode.size());

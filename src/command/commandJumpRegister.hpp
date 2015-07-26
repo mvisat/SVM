@@ -10,7 +10,7 @@ public:
     commandJumpRegister(ofstream *o, map<string, vector<counter_t> > *j) { outStream = o; jumpTable = j; }
     commandJumpRegister(memory *i) { svmMemory = i; }
     string name() { return "jr"; }
-    bytecode_t mnemonic_code() { return 20; }
+    mnemonic_t mnemonic_code() { return 20; }
     unsigned int operand_size() { return 2; }
     void execute(const vector<string>& cmd);
     void execute(const vector<bytecode_t>& cmd);

@@ -47,3 +47,7 @@ string str_replace_ext(const string& s, const string& ext) {
 
     return new_filename.append("." + ext);
 }
+
+string str_find_ext(const string& s) {
+    return s.substr(s.find_last_of('.')+1);
+}

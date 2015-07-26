@@ -10,7 +10,7 @@ public:
     commandLessThan(ofstream *o) { outStream = o; };
     commandLessThan(memory *i) { svmMemory = i; };
     string name() { return "lt"; };
-    bytecode_t mnemonic_code() { return 10; };
+    mnemonic_t mnemonic_code() { return 10; };
     unsigned int operand_size() { return 4; };
     void execute(const vector<string>& cmd);
     void execute(const vector<bytecode_t>& cmd);

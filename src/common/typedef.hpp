@@ -12,7 +12,9 @@ typedef int8_t memory_t;
 typedef uint16_t address_t;
 typedef uint64_t counter_t;
 typedef char bytecode_t;
-const int OPCODE_MAX = 0xFF;
+typedef unsigned char mnemonic_t;
+
+const int MAX_COMMAND = 0xFF;
 const int KEI_HEADER_SIZE = 12;
 
 #endif

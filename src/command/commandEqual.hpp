@@ -10,7 +10,7 @@ public:
     commandEqual(ofstream *o) { outStream = o; }
     commandEqual(memory *i) { svmMemory = i; }
     string name() { return "eq"; }
-    bytecode_t mnemonic_code() { return 9; }
+    mnemonic_t mnemonic_code() { return 9; }
     unsigned int operand_size() { return 4; }
     void execute(const vector<string>& cmd);
     void execute(const vector<bytecode_t>& cmd);

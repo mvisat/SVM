@@ -2,7 +2,7 @@
 
 using namespace std;
 
-invoker::invoker(): mapOfCommandCode(OPCODE_MAX) {
+invoker::invoker(): mapOfCommandCode(MAX_COMMAND) {
 }
 
 void invoker::add(command *c) {
@@ -27,13 +27,13 @@ void invoker::execute(const vector<string>& cmd) {
 }
 
 void invoker::execute(const vector<bytecode_t>& cmd, counter_t pointer) {
-    bytecode_t code = cmd[pointer];
-    command *c;
-    if (code >= 0 && code < OPCODE_MAX && (c = mapOfCommandCode[code]) != 0) {
+    mnemonic_t mnemonic = static_cast<mnemonic_t>(cmd[pointer]);
+    command *c = mapOfCommandCode[mnemonic];
+    if (c != 0) {
         c->execute(cmd);
     }
     else {
-        throw svm_exception("Error: Invalid bytecode 0x" + to_hex(static_cast<unsigned>(code)) + " at " + to_string(pointer));
+        throw svm_exception("Error: Invalid bytecode 0x" + to_hex(static_cast<unsigned>(mnemonic)) + " at " + to_string(pointer));
     }
 }
 

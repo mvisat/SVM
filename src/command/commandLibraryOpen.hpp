@@ -10,7 +10,7 @@ public:
     commandLibraryOpen(ofstream *o) { outStream = o; };
     commandLibraryOpen(memory *i) { svmMemory = i; };
     string name() { return "lopen"; };
-    bytecode_t mnemonic_code() { return 24; };
+    mnemonic_t mnemonic_code() { return 24; };
     unsigned int operand_size() { return 2; };
     void execute(const vector<string>& cmd);
     void execute(const vector<bytecode_t>& cmd);

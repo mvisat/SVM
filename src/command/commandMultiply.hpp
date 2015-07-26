@@ -10,7 +10,7 @@ public:
     commandMultiply(ofstream *o) { outStream = o; };
     commandMultiply(memory *i) { svmMemory = i; };
     string name() { return "mul"; };
-    bytecode_t mnemonic_code() { return 5; };
+    mnemonic_t mnemonic_code() { return 5; };
     unsigned int operand_size() { return 4; };
     void execute(const vector<string>& cmd);
     void execute(const vector<bytecode_t>& cmd);

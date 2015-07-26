@@ -56,3 +56,9 @@ constant_t parse_constant(const string& s) {
         }
     throw svm_exception("Error: Invalid constant '" + s + "'");
 }
+
+string parse_function(const string& s) {
+    if (s.size() > 1 && s[0] == '@')
+        return s.substr(1);
+    throw svm_exception("Error: Invalid function '" + s + "'");
+}

@@ -18,7 +18,7 @@ void commandJumpRegister::execute(index_t rDest) {
 void commandJumpRegister::write_bytecode(const vector<string>& cmd) {
     index_t rDest = parse_register(cmd[1]);
     vector<bytecode_t> bytecode;
-    bytecode.push_back(mnemonic_code());
+    bytecode.push_back(static_cast<bytecode_t>(mnemonic_code()));
     bytecode.push_back(rDest & 0x0F);
     outStream->write(bytecode.data(), bytecode.size());
 }

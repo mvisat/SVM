@@ -22,7 +22,7 @@ void commandLibraryOpen::execute(const string& lib_name) {
 void commandLibraryOpen::write_bytecode(const vector<string>& cmd) {
     string lib_name = cmd[1];
     vector<bytecode_t> bytecode;
-    bytecode.push_back(mnemonic_code());
+    bytecode.push_back(static_cast<bytecode_t>(mnemonic_code()));
     for (unsigned int i = 0; i < lib_name.size(); ++i)
         bytecode.push_back(lib_name[i]);
     bytecode.push_back(0);

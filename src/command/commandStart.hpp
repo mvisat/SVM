@@ -10,7 +10,7 @@ public:
     commandStart(ofstream *o) { outStream = o; };
     commandStart(memory *i) { svmMemory = i; };
     string name() { return "start"; };
-    bytecode_t mnemonic_code() { return 1; };
+    mnemonic_t mnemonic_code() { return 1; };
     unsigned int operand_size() { return 1; };
     void execute(const vector<string>& cmd);
     void execute(const vector<bytecode_t>& cmd);

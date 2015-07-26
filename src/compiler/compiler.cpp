@@ -14,7 +14,11 @@ compiler::~compiler() {
 void compiler::compile(const string& source) {
     syntax = parse_file(source);
 
-    string target = str_replace_ext(source, "kei");
+    string target;
+    if (str_find_ext(source) == "sasm")
+        target = str_replace_ext(source, "kei");
+    else
+        target += ".kei";
     outStream.open(target.c_str(), ofstream::out | ofstream::binary);
     if (!outStream.is_open())
         throw svm_exception("Error: Failed to write file '" + target + "'");

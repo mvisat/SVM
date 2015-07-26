@@ -10,7 +10,7 @@ public:
     commandLibraryLink(ofstream *o) { outStream = o; };
     commandLibraryLink(memory *i) { svmMemory = i; };
     string name() { return "link"; };
-    bytecode_t mnemonic_code() { return 25; };
+    mnemonic_t mnemonic_code() { return 25; };
     unsigned int operand_size() { return 2; };
     void execute(const vector<string>& cmd);
     void execute(const vector<bytecode_t>& cmd);

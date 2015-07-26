@@ -10,7 +10,7 @@ public:
     commandJumpAndLink(ofstream *o, map<string, vector<counter_t> > *j) { outStream = o; jumpTable = j; }
     commandJumpAndLink(memory *i) { svmMemory = i; }
     string name() { return "jal"; }
-    bytecode_t mnemonic_code() { return 21; }
+    mnemonic_t mnemonic_code() { return 21; }
     unsigned int operand_size() { return 3; }
     void execute(const vector<string>& cmd);
     void execute(const vector<bytecode_t>& cmd);

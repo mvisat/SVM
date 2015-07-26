@@ -10,7 +10,7 @@ public:
     commandNoOperation(ofstream *o) { outStream = o; };
     commandNoOperation(memory *i) { svmMemory = i; };
     string name() { return "nop"; };
-    bytecode_t mnemonic_code() { return 0; };
+    mnemonic_t mnemonic_code() { return 0; };
     unsigned int operand_size() { return 1; };
     void execute(const vector<string>& cmd);
     void execute(const vector<bytecode_t>& cmd);

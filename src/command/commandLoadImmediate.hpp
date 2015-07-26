@@ -10,7 +10,7 @@ public:
     commandLoadImmediate(ofstream *o) { outStream = o; };
     commandLoadImmediate(memory *i) { svmMemory = i; };
     string name() { return "ldi"; };
-    bytecode_t mnemonic_code() { return 14; };
+    mnemonic_t mnemonic_code() { return 14; };
     unsigned int operand_size() { return 3; };
     void execute(const vector<string>& cmd);
     void execute(const vector<bytecode_t>& cmd);

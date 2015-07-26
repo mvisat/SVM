@@ -10,7 +10,7 @@ public:
     commandLoadByte(ofstream *o) { outStream = o; };
     commandLoadByte(memory *i) { svmMemory = i; };
     string name() { return "lb"; };
-    bytecode_t mnemonic_code() { return 13; };
+    mnemonic_t mnemonic_code() { return 13; };
     unsigned int operand_size() { return 4; };
     void execute(const vector<string>& cmd);
     void execute(const vector<bytecode_t>& cmd);

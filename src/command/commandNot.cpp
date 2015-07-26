@@ -22,7 +22,7 @@ void commandNot::write_bytecode(const vector<string>& cmd) {
     index_t rDest = parse_register(cmd[1]);
     index_t rSrc = parse_register(cmd[2]);
     vector<bytecode_t> bytecode;
-    bytecode.push_back(mnemonic_code());
+    bytecode.push_back(static_cast<bytecode_t>(mnemonic_code()));
     bytecode.push_back((rDest & 0x0F) | ((rSrc & 0x0F) << 4));
     outStream->write(bytecode.data(), bytecode.size());
 }

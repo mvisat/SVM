@@ -28,7 +28,7 @@ void commandJumpAndLink::write_bytecode(const vector<string>& cmd) {
     index_t rDest = parse_register(cmd[1]);
     string label = cmd[2];
     vector<bytecode_t> bytecode;
-    bytecode.push_back(mnemonic_code());
+    bytecode.push_back(static_cast<bytecode_t>(mnemonic_code()));
     bytecode.push_back(rDest & 0x0F);
     for (unsigned int i = 0; i < sizeof(counter_t); ++i)
         bytecode.push_back(0);

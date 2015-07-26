@@ -26,7 +26,7 @@ void commandLoadByte::write_bytecode(const vector<string>& cmd) {
     index_t rSrc = parse_register(cmd[2]);
     address_t C = parse_constant(cmd[3]);
     vector<bytecode_t> bytecode;
-    bytecode.push_back(mnemonic_code());
+    bytecode.push_back(static_cast<bytecode_t>(mnemonic_code()));
     bytecode.push_back((rDest & 0x0F) | ((rSrc & 0x0F) << 4));
     bytecode.push_back(C & 0x00FF);
     bytecode.push_back((C & 0xFF00) >> 8);

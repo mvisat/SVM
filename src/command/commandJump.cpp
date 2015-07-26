@@ -22,7 +22,7 @@ void commandJump::execute(counter_t address) {
 void commandJump::write_bytecode(const vector<string>& cmd) {
     string label = cmd[1];
     vector<bytecode_t> bytecode;
-    bytecode.push_back(mnemonic_code());
+    bytecode.push_back(static_cast<bytecode_t>(mnemonic_code()));
     for (unsigned int i = 0; i < sizeof(counter_t); ++i)
         bytecode.push_back(0);
     outStream->write(bytecode.data(), bytecode.size());
