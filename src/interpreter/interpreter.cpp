@@ -9,14 +9,14 @@ interpreter::~interpreter() {
         delete cmdList[i];
 }
 
-bool interpreter::is_kei(const string& filename) {
-    ifstream ifs(filename.c_str(), ios::binary);
-    vector<bytecode_t> bytecode(KEI_HEADER_SIZE);
+bool interpreter::is_kei(const std::string& filename) {
+    std::ifstream ifs(filename.c_str(), std::ios::binary);
+    std::vector<bytecode_t> bytecode(KEI_HEADER_SIZE);
     ifs.read(bytecode.data(), KEI_HEADER_SIZE);
     return is_kei(bytecode);
 }
 
-bool interpreter::is_kei(const vector<bytecode_t>& bytecode) {
+bool interpreter::is_kei(const std::vector<bytecode_t>& bytecode) {
     if (bytecode.size() >= KEI_HEADER_SIZE) {
         return
             bytecode[0] == 0x03 &&
@@ -27,57 +27,54 @@ bool interpreter::is_kei(const vector<bytecode_t>& bytecode) {
     return false;
 }
 
-void interpreter::run_sasm(const string& filename) {
+void interpreter::run_sasm(const std::string& filename) {
     syntax = parse_file(filename);
     if (syntax.size() == 0)
         return;
 
     svmMemory.clear();
-    for (unsigned int i = 0; i < syntax.size(); ++i) {
-        if (syntax[i][0][0] == '.')
-            svmMemory.set_label(syntax[i][0], i);
-    }
+
+    for (unsigned int i = 0; i < syntax.size(); ++i)
+        if (syntax[i][0][0] == '.') {
+            if (svmMemory.is_label(syntax[i][0]))
+                throw svm_exception("Error: Duplicate labels found");
+            else
+                svmMemory.set_label(syntax[i][0], i);
+        }
+
     while (svmMemory.get_program_counter() < syntax.size() && !svmMemory.get_halt()) {
-        #ifdef DEBUG
-            cout << "Run:: " << svmMemory.get_program_counter() << " ";
-            for (unsigned int i = 0; i < syntax[svmMemory.get_program_counter()].size(); ++i)
-                cout << syntax[svmMemory.get_program_counter()][i] << " ";
-            cout << endl;
-        #endif
-
-        cmdInvoker.execute(syntax[svmMemory.get_program_counter()]);
-        svmMemory.set_program_counter(svmMemory.get_program_counter()+1);
-
-        #ifdef DEBUG
-            for (unsigned int i = 0; i < memory::MAX_REGISTER; ++i)
-                cout << "$" << i << " = " << svmMemory.get_register(i) << endl;
-            for (unsigned int i = 0; i < 10; ++i)
-                cout << (int)svmMemory.get_memory(i) << " ";
-            cout << endl;
-            for (unsigned int i = memory::MAX_MEMORY-10; i < memory::MAX_MEMORY; ++i)
-                cout << (int)svmMemory.get_memory(i) << " ";
-            cout << endl;
-        #endif
+        if (syntax[svmMemory.get_program_counter()][0][0] == '.')
+            svmMemory.inc_program_counter();
+        else
+            cmdInvoker.execute(syntax[svmMemory.get_program_counter()]);
     }
+
+    if (!svmMemory.get_start())
+        throw svm_exception("Error: Start command not found");
+    if (!svmMemory.get_halt())
+        throw svm_exception("Error: Halt command not found");
 }
 
-void interpreter::run_kei(const string& filename) {
-    ifstream ifs(filename.c_str(), ios::binary | ios::ate);
+void interpreter::run_kei(const std::string& filename) {
+    std::ifstream ifs(filename.c_str(), std::ios::binary | std::ios::ate);
     if (!ifs.is_open())
         throw svm_exception("Error: Failed to read file '" + filename + "'");
 
-    ifstream::pos_type size = ifs.tellg();
-    vector<bytecode_t> bytecode(size);
-    ifs.seekg(0, ios::beg);
+    std::ifstream::pos_type size = ifs.tellg();
+    std::vector<bytecode_t> bytecode(size);
+    ifs.seekg(0, std::ios::beg);
     ifs.read(bytecode.data(), size);
     if (!is_kei(bytecode))
         throw svm_exception("Error: Invalid kei file");
 
     svmMemory.clear();
     svmMemory.set_program_counter(KEI_HEADER_SIZE);
-    while (svmMemory.get_program_counter() < bytecode.size() && !svmMemory.get_halt()) {
+    while (svmMemory.get_program_counter() < bytecode.size() && !svmMemory.get_halt())
         cmdInvoker.execute(bytecode, svmMemory.get_program_counter());
-    }
+    if (!svmMemory.get_start())
+        throw svm_exception("Error: Start command not found");
+    if (!svmMemory.get_halt())
+        throw svm_exception("Error: Halt command not found");
 }
 
 void interpreter::initialize() {

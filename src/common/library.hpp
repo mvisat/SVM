@@ -1,5 +1,5 @@
-#ifndef LIBRARY_H
-#define LIBRARY_H
+#ifndef COMMON_LIBRARY_H
+#define COMMON_LIBRARY_H
 
 #ifdef _WIN32
     #include <windows.h>

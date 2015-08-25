@@ -1,14 +1,14 @@
 #include "parser.hpp"
 
-vector<vector<string> > parse_file(const string& filename) {
-    ifstream input(filename.c_str());
+std::vector<std::vector<std::string> > parse_file(const std::string& filename) {
+    std::ifstream input(filename.c_str());
     if (input.is_open()) {
-        vector<vector<string> > syntax;
-        string s;
+        std::vector<std::vector<std::string> > syntax;
+        std::string s;
         while (getline(input, s)) {
-            vector<string> v = str_split_ws(s);
+            std::vector<std::string> v = str_split_ws(s);
             for (unsigned int i = 0; i < v.size(); ++i) {
-                if (v[i] == "#") {
+                if (v[i].size() == 0 || v[i][0] == '#') {
                     while (i < v.size())
                         v.erase(v.begin()+i);
                     break;
@@ -21,8 +21,8 @@ vector<vector<string> > parse_file(const string& filename) {
         #ifdef DEBUG
             for (unsigned int i = 0; i < syntax.size(); ++i) {
                 for (int j = 0; j < syntax[i].size(); ++j)
-                    cout << syntax[i][j] << " ";
-                cout << endl;
+                    std::cout << syntax[i][j] << " ";
+                std::cout << endl;
             }
         #endif
 
@@ -34,31 +34,31 @@ vector<vector<string> > parse_file(const string& filename) {
     }
 }
 
-int parse_register(const string& s) {
+int parse_register(const std::string& s) {
     if (s.size() > 1 && s[0] == '$')
         try {
             int reg = from_string<int>(s.substr(1));
             if (reg >= 0 && reg < memory::MAX_REGISTER)
                 return reg;
-        } catch (const exception&) {
+        } catch (const std::exception&) {
 
         }
     throw svm_exception("Error: Invalid register '" + s + "'");
 }
 
-constant_t parse_constant(const string& s) {
+constant_t parse_constant(const std::string& s) {
     if (s.size() > 0)
         try {
             int c = from_string<int>(s);
             return c;
-        } catch (const exception&) {
+        } catch (const std::exception&) {
 
         }
     throw svm_exception("Error: Invalid constant '" + s + "'");
 }
 
-string parse_function(const string& s) {
+std::string parse_function(const std::string& s) {
     if (s.size() > 1 && s[0] == '@')
         return s.substr(1);
-    throw svm_exception("Error: Invalid function '" + s + "'");
+    throw svm_exception("Error: Invalid function name '" + s + "'");
 }

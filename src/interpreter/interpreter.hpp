@@ -1,5 +1,5 @@
-#ifndef SVM_H
-#define SVM_H
+#ifndef INTERPRETER_H
+#define INTERPRETER_H
 
 #include "../common/strutil.hpp"
 #include "../common/library.hpp"
@@ -39,23 +39,21 @@
 #include <vector>
 #include <fstream>
 
-using namespace std;
-
 class interpreter {
 public:
     interpreter();
     ~interpreter();
-    void run_kei(const string& filename);
-    void run_sasm(const string& filename);
-    bool is_kei(const vector<bytecode_t>& bytecode);
-    bool is_kei(const string& filename);
+    void run_kei(const std::string& filename);
+    void run_sasm(const std::string& filename);
+    bool is_kei(const std::vector<bytecode_t>& bytecode);
+    bool is_kei(const std::string& filename);
 
 private:
     void initialize();
     memory svmMemory;
     invoker cmdInvoker;
-    vector<command*> cmdList;
-    vector<vector<string> > syntax;
+    std::vector<command*> cmdList;
+    std::vector<std::vector<std::string> > syntax;
 };
 
 #endif

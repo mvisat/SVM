@@ -1,7 +1,5 @@
 #include "compiler.hpp"
 
-using namespace std;
-
 compiler::compiler() {
     initialize();
 }
@@ -11,20 +9,20 @@ compiler::~compiler() {
         delete cmdList[i];
 }
 
-void compiler::compile(const string& source) {
+void compiler::compile(const std::string& source) {
     syntax = parse_file(source);
 
-    string target;
+    std::string target;
     if (str_find_ext(source) == "sasm")
         target = str_replace_ext(source, "kei");
     else
         target = source + ".kei";
-    outStream.open(target.c_str(), ofstream::out | ofstream::binary);
+    outStream.open(target.c_str(), std::ofstream::out | std::ofstream::binary);
     if (!outStream.is_open())
         throw svm_exception("Error: Failed to write file '" + target + "'");
 
-    vector<bytecode_t> kei_header;
-    // magic string
+    std::vector<bytecode_t> kei_header;
+    // magic std::string
     kei_header.push_back(0x03);
     kei_header.push_back(0x6b);
     kei_header.push_back(0x65);
@@ -40,24 +38,32 @@ void compiler::compile(const string& source) {
     kei_header.push_back(0x7a);
     outStream.write(kei_header.data(), kei_header.size());
 
-    map<string, counter_t> labelTable;
+    std::map<std::string, counter_t> labelTable;
     for (unsigned int i = 0; i < syntax.size(); ++i) {
-        if (syntax[i][0][0] == '.')
-            labelTable[syntax[i][0]] = outStream.tellp();
+        std::string cur = syntax[i][0];
+        if (cur[0] == '.') {
+            if (labelTable.find(cur) == labelTable.end())
+                labelTable[cur] = outStream.tellp();
+            else
+                throw svm_exception("Error: Duplicate labels found");
+        }
         else
             cmdInvoker.write_bytecode(syntax[i]);
     }
 
-    for (map<string, vector<counter_t> >::iterator it = jumpTable.begin(); it != jumpTable.end(); ++it) {
-        vector<bytecode_t> jumpBuf;
-        counter_t jump = labelTable[it->first];
+    for (std::map<std::string, std::vector<counter_t> >::iterator it = jumpTable.begin(); it != jumpTable.end(); ++it) {
+        std::vector<bytecode_t> jumpBuf;
+        std::map<std::string, counter_t>::iterator it_label = labelTable.find(it->first);
+        if (it_label == labelTable.end())
+            throw svm_exception("Error: Label '" + it->first + "' not found");
+        counter_t jump = it_label->second;
         for (unsigned int j = 0; j < sizeof(counter_t); ++j) {
             jumpBuf.push_back(jump & 0xFF);
             jump >>= 8;
         }
-        vector<counter_t> v = it->second;
+        std::vector<counter_t> v = it->second;
         for (unsigned int i = 0; i < v.size(); ++i) {
-            outStream.seekp(v[i], ios::beg);
+            outStream.seekp(v[i], std::ios::beg);
             outStream.write(jumpBuf.data(), jumpBuf.size());
         }
     }

@@ -1,21 +1,19 @@
-#ifndef SVM_COMMAND_LT_H
-#define SVM_COMMAND_LT_H
+#ifndef COMMAND_LT_H
+#define COMMAND_LT_H
 
 #include "command.hpp"
 
-using namespace std;
-
 class commandLessThan: public command {
 public:
-    commandLessThan(ofstream *o) { outStream = o; };
+    commandLessThan(std::ofstream *o) { outStream = o; };
     commandLessThan(memory *i) { svmMemory = i; };
-    string name() { return "lt"; };
+    std::string name() { return "lt"; };
     mnemonic_t mnemonic_code() { return 10; };
     unsigned int operand_size() { return 4; };
-    void execute(const vector<string>& cmd);
-    void execute(const vector<bytecode_t>& cmd);
+    void execute(const std::vector<std::string>& cmd);
+    void execute(const std::vector<bytecode_t>& cmd);
     void execute(index_t rDest, index_t rSrc1, index_t rSrc2);
-    void write_bytecode(const vector<string>& cmd);
+    void write_bytecode(const std::vector<std::string>& cmd);
 };
 
 #endif

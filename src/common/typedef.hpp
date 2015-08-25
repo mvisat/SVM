@@ -1,9 +1,7 @@
-#ifndef TYPEDEF_H
-#define TYPEDEF_H
+#ifndef COMMON_TYPEDEF_H
+#define COMMON_TYPEDEF_H
 
 #include <stdint.h>
-
-using namespace std;
 
 typedef uint8_t index_t;
 typedef int16_t register_t;

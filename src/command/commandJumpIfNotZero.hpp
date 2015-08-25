@@ -1,21 +1,19 @@
-#ifndef SVM_COMMAND_JNZ_H
-#define SVM_COMMAND_JNZ_H
+#ifndef COMMAND_JNZ_H
+#define COMMAND_JNZ_H
 
 #include "command.hpp"
 
-using namespace std;
-
 class commandJumpIfNotZero: public command {
 public:
-    commandJumpIfNotZero(ofstream *o, map<string, vector<counter_t> > *j) { outStream = o; jumpTable = j; }
+    commandJumpIfNotZero(std::ofstream *o, std::map<std::string, std::vector<counter_t> > *j) { outStream = o; jumpTable = j; }
     commandJumpIfNotZero(memory *i) { svmMemory = i; }
-    string name() { return "jnz"; }
+    std::string name() { return "jnz"; }
     mnemonic_t mnemonic_code() { return 18; }
     unsigned int operand_size() { return 3; }
-    void execute(const vector<string>& cmd);
-    void execute(const vector<bytecode_t>& cmd);
+    void execute(const std::vector<std::string>& cmd);
+    void execute(const std::vector<bytecode_t>& cmd);
     void execute(index_t rDest, counter_t address);
-    void write_bytecode(const vector<string>& cmd);
+    void write_bytecode(const std::vector<std::string>& cmd);
 };
 
 #endif

@@ -3,23 +3,21 @@
 #include <exception>
 #include <iostream>
 
-using namespace std;
-
 int main(int argc, char* argv[]) {
     for (int i = 1; i < argc; ++i) {
-        if (argv[i] == string("-kei")) {
+        if (argv[i] == std::string("-kei")) {
             interpreter interpreter;
-            string filename;
+            std::string filename;
             if ((i+1) >= argc) {
-                cerr << "Error: -kei requires kei file" << endl;
+                std::cerr << "Error: -kei requires kei file" << std::endl;
             }
             else {
                 try {
-                    interpreter.run_kei(string(argv[i+1]));
+                    interpreter.run_kei(std::string(argv[i+1]));
                     return 0;
                 }
-                    catch (const exception& e) {
-                    cerr << e.what() << endl;
+                    catch (const std::exception& e) {
+                    std::cerr << e.what() << std::endl;
                 }
             }
             return 1;
@@ -27,18 +25,18 @@ int main(int argc, char* argv[]) {
         else {
             try {
                 interpreter interpreter;
-                interpreter.run_sasm(string(argv[i]));
+                interpreter.run_sasm(std::string(argv[i]));
                 return 0;
             }
-            catch (const exception& e) {
-                cerr << e.what() << endl;
+            catch (const std::exception& e) {
+                std::cerr << e.what() << std::endl;
             }
             return 1;
         }
     }
-    cerr << "Usage:\tsvm sasmfile" << endl;
-    cerr << "\t    (to execute a sasm file)" << endl;
-    cerr << "    or\tsvm -kei keifile" << endl;
-    cerr << "\t    (to execute a kei file)" << endl;
+    std::cerr << "Usage:\tsvm sasmfile" << std::endl;
+    std::cerr << "\t    (to execute a sasm file)" << std::endl;
+    std::cerr << "    or\tsvm -kei keifile" << std::endl;
+    std::cerr << "\t    (to execute a kei file)" << std::endl;
     return 1;
 }

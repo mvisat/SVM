@@ -2,21 +2,19 @@
 
 #include <iostream>
 
-using namespace std;
-
 int main(int argc, char* argv[]) {
     if (argc == 1) {
-        cout << "Usage:\tsvmc [sasm files]" << endl;
+        std::cout << "Usage:\tsvmc [sasm files]" << std::endl;
         return 1;
     }
 
     compiler compiler;
     for (int i = 1; i < argc; ++i) {
         try {
-            compiler.compile(string(argv[i]));
+            compiler.compile(std::string(argv[i]));
         }
-        catch (const exception& e) {
-            cerr << e.what() << endl;
+        catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
             return 1;
         }
     }

@@ -1,5 +1,5 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef COMMON_PARSER_H
+#define COMMON_PARSER_H
 
 #include "svm_exception.hpp"
 #include "typedef.hpp"
@@ -8,11 +8,9 @@
 
 #include <fstream>
 
-using namespace std;
-
-vector<vector<string> > parse_file(const string& file);
-int parse_register(const string& s);
-constant_t parse_constant(const string& s);
-string parse_function(const string& s);
+std::vector<std::vector<std::string> > parse_file(const std::string& file);
+int parse_register(const std::string& s);
+constant_t parse_constant(const std::string& s);
+std::string parse_function(const std::string& s);
 
 #endif

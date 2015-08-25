@@ -1,21 +1,19 @@
-#ifndef SVM_COMMAND_NOP_H
-#define SVM_COMMAND_NOP_H
+#ifndef COMMAND_NOP_H
+#define COMMAND_NOP_H
 
 #include "command.hpp"
 
-using namespace std;
-
 class commandNoOperation: public command {
 public:
-    commandNoOperation(ofstream *o) { outStream = o; };
+    commandNoOperation(std::ofstream *o) { outStream = o; };
     commandNoOperation(memory *i) { svmMemory = i; };
-    string name() { return "nop"; };
+    std::string name() { return "nop"; };
     mnemonic_t mnemonic_code() { return 0; };
     unsigned int operand_size() { return 1; };
-    void execute(const vector<string>& cmd);
-    void execute(const vector<bytecode_t>& cmd);
+    void execute(const std::vector<std::string>& cmd);
+    void execute(const std::vector<bytecode_t>& cmd);
     void execute();
-    void write_bytecode(const vector<string>& cmd);
+    void write_bytecode(const std::vector<std::string>& cmd);
 };
 
 #endif

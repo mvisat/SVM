@@ -1,5 +1,5 @@
-#ifndef SVM_COMMAND_H
-#define SVM_COMMAND_H
+#ifndef COMMAND_H
+#define COMMAND_H
 
 #include "../common/typedef.hpp"
 #include "../common/parser.hpp"
@@ -8,9 +8,8 @@
 #include <vector>
 #include <iostream>
 
-using namespace std;
-
 /*
+000 No operation
 001 Start
 002 Add
 003 Add immediate
@@ -36,22 +35,21 @@ using namespace std;
 023 Halt
 024 Open library
 025 Link
-
 */
 
 class command {
 public:
     virtual ~command() {};
-    virtual string name() = 0;
+    virtual std::string name() = 0;
     virtual mnemonic_t mnemonic_code() = 0;
     virtual unsigned int operand_size() = 0;
-    virtual void execute(const vector<string>& cmd) = 0;
-    virtual void execute(const vector<bytecode_t>& cmd) = 0;
-    virtual void write_bytecode(const vector<string>& cmd) = 0;
+    virtual void execute(const std::vector<std::string>& cmd) = 0;
+    virtual void execute(const std::vector<bytecode_t>& cmd) = 0;
+    virtual void write_bytecode(const std::vector<std::string>& cmd) = 0;
 protected:
     memory *svmMemory;
-    ofstream *outStream;
-    map<string, vector<counter_t> > *jumpTable;
+    std::ofstream *outStream;
+    std::map<std::string, std::vector<counter_t> > *jumpTable;
 };
 
 #endif

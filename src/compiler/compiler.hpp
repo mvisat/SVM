@@ -38,19 +38,17 @@
 #include <string>
 #include <fstream>
 
-using namespace std;
-
 class compiler {
 public:
     compiler();
     ~compiler();
-    void compile(const string& source);
+    void compile(const std::string& source);
 private:
-    vector<vector<string> > syntax;
-    vector<command*> cmdList;
+    std::vector<std::vector<std::string> > syntax;
+    std::vector<command*> cmdList;
     invoker cmdInvoker;
-    ofstream outStream;
-    map<string, vector<counter_t> > jumpTable;
+    std::ofstream outStream;
+    std::map<std::string, std::vector<counter_t> > jumpTable;
     void initialize();
 };
 

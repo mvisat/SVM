@@ -8,11 +8,18 @@ memory::memory(): Register(MAX_REGISTER), Memory(MAX_MEMORY), LastHandle(0) {
 }
 
 memory::~memory() {
-    for (map<string, lib_t>::iterator it = LibHandle.begin(); it != LibHandle.end(); ++it)
+    for (std::map<std::string, lib_t>::iterator it = LibHandle.begin(); it != LibHandle.end(); ++it)
         LibUnload(it->second);
 }
 
 void memory::clear() {
+    for (std::map<std::string, lib_t>::iterator it = LibHandle.begin(); it != LibHandle.end(); ++it)
+        LibUnload(it->second);
+    LastHandle = 0;
+    LibHandle.clear();
+    LibFunction.clear();
+
+    Start = false;
     Halt = false;
     ProgramCounter = 0;
     for (unsigned int i = 0; i < MAX_REGISTER; ++i)
@@ -22,37 +29,40 @@ void memory::clear() {
     Label.clear();
 }
 
-counter_t memory::get_label(const string& label_name) {
-    map<string, counter_t>::iterator it = Label.find(label_name);
+counter_t memory::get_label(const std::string& label_name) const {
+    std::map<std::string, counter_t>::const_iterator it = Label.find(label_name);
     if (it != Label.end())
         return it->second;
     else
-        return 0;
+        throw svm_exception("Error: Label '" + label_name + "' not found");
 }
 
-void memory::set_label(const string& label_name, counter_t value) {
+void memory::set_label(const std::string& label_name, counter_t value) {
     Label[label_name] = value;
 }
 
-function_t memory::get_lib_function(const string& function_name) {
-    map<string, function_t>::iterator it = LibFunction.find(function_name);
+function_t memory::get_lib_function(const std::string& function_name) const {
+    std::map<std::string, function_t>::const_iterator it = LibFunction.find(function_name);
     if (it != LibFunction.end())
         return it->second;
     else
-        return 0;
+        throw svm_exception("Error: Function '" + function_name + "' not found");
 }
 
-void memory::link_lib_function(const string& function_name) {
+void memory::link_lib_function(const std::string& function_name) {
     if (LastHandle) {
-        function_t f = (function_t)::LoadProc(LastHandle, function_name.substr(1).c_str());
-        if (f)
+        function_t f = (function_t)::LoadProc(LastHandle, function_name.c_str());
+        if (f) {
             LibFunction[function_name] = f;
+        }
         else
             throw svm_exception("Error: Failed to link function '" + function_name + "'");
     }
+    else
+        throw svm_exception("Error: Library not loaded");
 }
 
-void memory::load_lib(const string& lib_name) {
+void memory::load_lib(const std::string& lib_name) {
     if (LibHandle.find(lib_name) == LibHandle.end()) {
         lib_t handle = 0;
         #ifdef _WIN32

@@ -1,21 +1,19 @@
-#ifndef SVM_COMMAND_ADD_H
-#define SVM_COMMAND_ADD_H
+#ifndef COMMAND_ADD_H
+#define COMMAND_ADD_H
 
 #include "command.hpp"
 
-using namespace std;
-
 class commandAdd: public command {
 public:
-    commandAdd(ofstream *o) { outStream = o; };
+    commandAdd(std::ofstream *o) { outStream = o; };
     commandAdd(memory *i) { svmMemory = i; };
-    string name() { return "add"; };
+    std::string name() { return "add"; };
     mnemonic_t mnemonic_code() { return 2; };
     unsigned int operand_size() { return 4; };
-    void execute(const vector<string>& cmd);
-    void execute(const vector<bytecode_t>& cmd);
+    void execute(const std::vector<std::string>& cmd);
+    void execute(const std::vector<bytecode_t>& cmd);
     void execute(index_t rDest, index_t rSrc1, index_t rSrc2);
-    void write_bytecode(const vector<string>& cmd);
+    void write_bytecode(const std::vector<std::string>& cmd);
 };
 
 #endif
