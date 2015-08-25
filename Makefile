@@ -1,7 +1,17 @@
 
 CXXFLAGS += -O2 -Wall -m32
-ifneq ($(OS),Windows_NT)
-    LDFLAGS += -ldl
+STR_DUMMY := __DUMMY__
+ifeq ($(OS),Windows_NT)
+	CHAR_PATH 	:= \\
+	CMD_SEP		:= &
+	CMD_MKDIR 	:= if not exist $(STR_DUMMY) mkdir
+	CMD_RMDIR 	:= if exist $(STR_DUMMY)\\ rmdir /S /Q
+else
+	CHAR_PATH 	:= /
+	CMD_SEP		:= ;
+	CMD_MKDIR 	:= mkdir -p
+	CMD_RMDIR 	:= rm -rf
+    LDFLAGS 	+= -ldl
 endif
 
 SRC_DIR := src
@@ -23,7 +33,7 @@ $1/%.o: %.cpp
 endef
 
 define make-bin
-	$(CXX) $^ -o $(BIN_DIR)/$@ $(CXXFLAGS) $(LDFLAGS)
+	$(CXX) $^ -o $(BIN_DIR)$(CHAR_PATH)$@ $(CXXFLAGS) $(LDFLAGS)
 endef
 
 .PHONY: all checkdirs clean
@@ -39,9 +49,9 @@ svmc: $(OBJ) $(foreach sdir,$(SRC_DIR)/compiler,$(wildcard $(sdir)/*.cpp))
 checkdirs: $(MODULE_BUILD_DIR)
 
 $(MODULE_BUILD_DIR):
-	@mkdir -p $@
+	@$(subst $(STR_DUMMY),$(subst /,$(CHAR_PATH),$@),$(CMD_MKDIR)) $(subst /,$(CHAR_PATH),$@)
 
 clean:
-	@rm -rf $(MODULE_BUILD_DIR)
+	$(foreach bdir,$(MODULE_BUILD_DIR),@$(subst $(STR_DUMMY),$(subst /,$(CHAR_PATH),$(bdir)),$(CMD_RMDIR)) $(subst /,$(CHAR_PATH),$(bdir)) $(CMD_SEP))
 
 $(foreach bdir,$(MODULE_BUILD_DIR),$(eval $(call make-goal,$(bdir))))
