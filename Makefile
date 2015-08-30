@@ -1,11 +1,11 @@
 
-CXXFLAGS += -O2 -Wall -m32
+CXXFLAGS += -O2 -Wall
 STR_DUMMY := __DUMMY__
 ifeq ($(OS),Windows_NT)
 	CHAR_PATH 	:= \\
 	CMD_SEP		:= &
 	CMD_MKDIR 	:= if not exist $(STR_DUMMY) mkdir
-	CMD_RMDIR 	:= if exist $(STR_DUMMY)\\ rmdir /S /Q
+	CMD_RMDIR 	:= if exist $(STR_DUMMY)$(CHAR_PATH) rmdir /S /Q
 else
 	CHAR_PATH 	:= /
 	CMD_SEP		:= ;
@@ -52,6 +52,6 @@ $(MODULE_BUILD_DIR):
 	@$(subst $(STR_DUMMY),$(subst /,$(CHAR_PATH),$@),$(CMD_MKDIR)) $(subst /,$(CHAR_PATH),$@)
 
 clean:
-	$(foreach bdir,$(MODULE_BUILD_DIR),@$(subst $(STR_DUMMY),$(subst /,$(CHAR_PATH),$(bdir)),$(CMD_RMDIR)) $(subst /,$(CHAR_PATH),$(bdir)) $(CMD_SEP))
+	$(foreach bdir,$(MODULE_BUILD_DIR),$(subst $(STR_DUMMY),$(subst /,$(CHAR_PATH),$(bdir)),$(CMD_RMDIR)) $(subst /,$(CHAR_PATH),$(bdir)) $(CMD_SEP))
 
 $(foreach bdir,$(MODULE_BUILD_DIR),$(eval $(call make-goal,$(bdir))))

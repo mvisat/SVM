@@ -9,11 +9,11 @@ endif
 all: libhello libsample
 
 libhello: libhello.c
-	gcc -c libhello.c -o libhello.o -m32
-	gcc -shared -o libhello$(EXT) libhello.o -m32
+	gcc -fPIC -c libhello.c -o libhello.o
+	gcc -fPIC -shared -o libhello$(EXT) libhello.o
 	@$(DEL) *.o
 
 libsample: libsample.c
-	gcc -c libsample.c -o libsample.o -m32
-	gcc -shared -o libsample$(EXT) libsample.o -m32
+	gcc -fPIC -c libsample.c -o libsample.o
+	gcc -fPIC -shared -o libsample$(EXT) libsample.o
 	@$(DEL) *.o
